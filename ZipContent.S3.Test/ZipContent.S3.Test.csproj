@@ -16,8 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\ZipContent.Core\ZipContent.Core.csproj" />
-    <ProjectReference Include="..\ZipContent.S3\ZipContent.S3.csproj" />
+     <ProjectReference Include="..\ZipContent.S3\ZipContent.S3.csproj" />
   </ItemGroup>
 
   <ItemGroup>

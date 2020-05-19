@@ -13,10 +13,6 @@ Lists zip file content on AWS S3 without downloading whole document. Supports bo
 
   <ItemGroup>
     <PackageReference Include="AWSSDK.S3" Version="3.3.110.71" />
+    <PackageReference Include="ZipContent.Core" Version="1.0.0" />
   </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\ZipContent.Core\ZipContent.Core.csproj" />
-  </ItemGroup>
-
 </Project>

@@ -10,18 +10,8 @@ Lists zip file content on Azure Blob without downloading whole document. Support
     <RepositoryUrl>https://github.com/hkutluay/ZipContent</RepositoryUrl>
     <PackageTags>zip list content azure</PackageTags>
   </PropertyGroup>
-
   <ItemGroup>
-    <None Remove="lqn5gcaa.kbq~" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Azure.Core" Version="1.2.1" />
     <PackageReference Include="Azure.Storage.Blobs" Version="12.4.2" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\ZipContent.Core\ZipContent.Core.csproj" />
-  </ItemGroup>
+    <PackageReference Include="ZipContent.Core" Version="1.0.0" />  </ItemGroup> 
 
 </Project>
