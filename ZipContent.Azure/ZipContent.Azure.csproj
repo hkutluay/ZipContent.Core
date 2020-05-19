@@ -1,7 +1,14 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFrameworks>netstandard2.1;netstandard2.0</TargetFrameworks>
+    <Authors>hkutluay</Authors>
+    <Description>AzurePartialFileReader for ZipContent.Core
+
+Lists zip file content on Azure Blob without downloading whole document. Supports both zip and zip64 files.</Description>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <RepositoryUrl>https://github.com/hkutluay/ZipContent</RepositoryUrl>
+    <PackageTags>zip list content azure</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>
