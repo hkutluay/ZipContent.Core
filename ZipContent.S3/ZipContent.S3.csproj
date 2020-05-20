@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFrameworks>netstandard1.6;netstandard2.1;netstandard2.0;</TargetFrameworks>
-    <Description>AzurePartialFileReader for ZipContent.Core
+    <Description>S3PartialFileReader for ZipContent.Core
 
 Lists zip file content on AWS S3 without downloading whole document. Supports both zip and zip64 files.</Description>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
