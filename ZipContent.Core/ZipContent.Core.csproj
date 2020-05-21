@@ -8,9 +8,16 @@
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <RepositoryUrl>https://github.com/hkutluay/ZipContent</RepositoryUrl>
     <PackageTags>zip list content</PackageTags>
+    <PackageIcon>core_logo.png</PackageIcon>
   </PropertyGroup>
   <ItemGroup Condition=" '$(TargetFramework)' == 'net45' ">
     <Reference Include="System.IO.Compression" />
     <Reference Include=" System.IO.Compression.FileSystem" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="core_logo.png">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
   </ItemGroup>
 </Project>
