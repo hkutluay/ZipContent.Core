@@ -3,5 +3,5 @@
 
 Lists zip file content on cloud providers without downloading whole document. Supports both zip and zip64 files.
 
-Core project for [ZipContent.S3](https://github.com/hkutluay/ZipContent.S3) and [ZipContent.Azure](https://github.com/hkutluay/ZipContent.Azure) repositories.
+Core project for [ZipContent.S3](https://github.com/hkutluay/ZipContent.S3), [ZipContent.GoogleDrive](https://github.com/hkutluay/ZipContent.GoogleDrive) and [ZipContent.Azure](https://github.com/hkutluay/ZipContent.Azure) repositories.
 
