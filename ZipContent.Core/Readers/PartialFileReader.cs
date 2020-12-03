@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace ZipContent.Core
@@ -13,21 +14,43 @@ namespace ZipContent.Core
             _fileInfo = new FileInfo($"{folder}/{fileName}");
         }
 
-        public async Task<long> ContentLength()
+        public Task<long> ContentLength()
         {
-            using (var docStream = _fileInfo.OpenRead())
-                return docStream.Length;
+            var task = new Task<long>(() =>
+            {
+                using (var docStream = _fileInfo.OpenRead())
+                {
+                    return docStream.Length;
+                }
+            });
+            task.RunSynchronously(TaskScheduler.Current);
+            return task;
         }
 
-        public async Task<byte[]> GetBytes(ByteRange range)
+        public Task<byte[]> GetBytes(ByteRange range)
         {
-            var stream = _fileInfo.OpenRead();
-            var br = new BinaryReader(stream);
+            var task = new Task<byte[]>(() =>
+            {
+                var stream = _fileInfo.OpenRead();
+                var br = new BinaryReader(stream);
 
-            byte[] dataArray = new byte[Convert.ToInt32(range.End - range.Start)];
-            stream.Seek(Convert.ToInt32(range.Start), SeekOrigin.Begin);
+                byte[] dataArray = new byte[Convert.ToInt32(range.End - range.Start)];
+                stream.Seek(Convert.ToInt32(range.Start), SeekOrigin.Begin);
 
-            return br.ReadBytes(Convert.ToInt32(range.End - range.Start));
+                return br.ReadBytes(Convert.ToInt32(range.End - range.Start));
+            });
+            task.RunSynchronously(TaskScheduler.Current);
+            return task;
+        }
+
+        public Task<long> ContentLength(CancellationToken cancellation)
+        {
+            return ContentLength();
+        }
+
+        public Task<byte[]> GetBytes(ByteRange range, CancellationToken cancellation)
+        {
+            return GetBytes(range);
         }
     }
 }
