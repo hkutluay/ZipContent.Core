@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace ZipContent.Core
@@ -16,20 +17,20 @@ namespace ZipContent.Core
         static readonly byte[] zip64EocdLocatorHeader = new byte[] { 80, 75, 6, 7 };
         static readonly byte[] localFileHeader = new byte[] { 80, 75, 3, 4 };
 
-        public async Task<IList<ZipEntry>> GetContents(IPartialFileReader partialReader)
+        public async Task<IList<ZipEntry>> GetContents(IPartialFileReader partialReader, CancellationToken cancellationToken = default)
         {
             var length = await partialReader.ContentLength();
 
             var readLength = length > 5012 ? 5012 : length;
 
-            var headerBytes = await partialReader.GetBytes(new ByteRange(0, 4));
+            var headerBytes = await partialReader.GetBytes(new ByteRange(0, 4), cancellationToken);
             int headerPos = Search(headerBytes, localFileHeader);
 
             if (headerPos == -1)
                 throw new FileIsNotaZipException();
 
 
-            var endingBytes = await partialReader.GetBytes(new ByteRange(length - readLength, length));
+            var endingBytes = await partialReader.GetBytes(new ByteRange(length - readLength, length), cancellationToken);
 
             int pos = Search(endingBytes, eocdHeader);
 
@@ -58,7 +59,7 @@ namespace ZipContent.Core
                 zip64EocdLocatorHeaderBytes = endingBytes.Skip(zip64EocdLocatorHeaderPos).Take(20).ToArray();
             }
 
-            var centralDirectoryData = await partialReader.GetBytes(new ByteRange(start, start + size));
+            var centralDirectoryData = await partialReader.GetBytes(new ByteRange(start, start + size), cancellationToken);
 
             for (int i = 0; i < 4; i++)
                 eocdHeaderBytes[i + 16] = 0;
