@@ -5,11 +5,9 @@ namespace ZipContent.Core
 {
     public interface IPartialFileReader
     {
-        Task<long> ContentLength();
-        Task<byte[]> GetBytes(ByteRange range);
+        
+        Task<long> ContentLength(CancellationToken cancellationToken = default);
 
-        Task<long> ContentLength(CancellationToken cancellation);
-
-        Task<byte[]> GetBytes(ByteRange range, CancellationToken cancellation);
+        Task<byte[]> GetBytes(ByteRange range, CancellationToken cancellationToken = default);
     }
 }

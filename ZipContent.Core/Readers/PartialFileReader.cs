@@ -14,7 +14,7 @@ namespace ZipContent.Core
             _fileInfo = new FileInfo($"{folder}/{fileName}");
         }
 
-        public Task<long> ContentLength()
+        public Task<long> ContentLength(CancellationToken cancellationToken = default)
         {
             var task = new Task<long>(() =>
             {
@@ -22,12 +22,13 @@ namespace ZipContent.Core
                 {
                     return docStream.Length;
                 }
-            });
+            }, cancellationToken);
+
             task.RunSynchronously(TaskScheduler.Current);
             return task;
         }
 
-        public Task<byte[]> GetBytes(ByteRange range)
+        public Task<byte[]> GetBytes(ByteRange range, CancellationToken cancellationToken = default)
         {
             var task = new Task<byte[]>(() =>
             {
@@ -38,19 +39,11 @@ namespace ZipContent.Core
                 stream.Seek(Convert.ToInt32(range.Start), SeekOrigin.Begin);
 
                 return br.ReadBytes(Convert.ToInt32(range.End - range.Start));
-            });
+            }, cancellationToken);
+
             task.RunSynchronously(TaskScheduler.Current);
             return task;
         }
 
-        public Task<long> ContentLength(CancellationToken cancellation)
-        {
-            return ContentLength();
-        }
-
-        public Task<byte[]> GetBytes(ByteRange range, CancellationToken cancellation)
-        {
-            return GetBytes(range);
-        }
     }
 }
