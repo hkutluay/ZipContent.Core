@@ -8,17 +8,13 @@ namespace ZipContent.Core.Test
     public class GivenNestedZipFile
     {
 
-        private readonly IZipContentLister _lister;
-        public GivenNestedZipFile()
-        {
-            _lister = new ZipContentLister();
-        }
 
         [TestMethod]
         public async Task ExtractedFilesCountShouldMatch()
         {
             var partialReader = new PartialFileReader("ZipFiles", "nested.zip");
-             var content = await _lister.GetContents(partialReader);
+            var lister = new ZipContentLister(partialReader);
+            var content = await lister.GetContents();
 
             Assert.AreEqual(content.Count, 1);
         }

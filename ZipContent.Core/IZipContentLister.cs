@@ -6,6 +6,6 @@ namespace ZipContent.Core
 {
     public interface IZipContentLister
     {
-         Task<IList<ZipEntry>> GetContents(IPartialFileReader partialReader, CancellationToken cancellationToken = default);
+         Task<IList<ZipEntry>> GetContents(CancellationToken cancellationToken = default);
     }
 }
