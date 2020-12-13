@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
@@ -14,7 +13,8 @@ namespace ZipContent.Core
     {
 
         //https://pkware.cachefly.net/webdocs/casestudies/APPNOTE.TXT
-        static readonly byte[] localFileHeader = new byte[] { 80, 75, 3, 4 };
+        private static readonly byte[] localFileHeaderPattern = new byte[] { 80, 75, 3, 4 };
+        private const int endingSize = 5012;
         private readonly IPartialFileReader _partialReader;
         
         public ZipContentLister(IPartialFileReader partialReader)
@@ -25,11 +25,10 @@ namespace ZipContent.Core
         public async Task<bool> IsZipFile(CancellationToken cancellationToken = default)
         {
             var headerBytes = await _partialReader.GetBytes(new ByteRange(0, 4), cancellationToken);
-            int headerPos = headerBytes.Search(localFileHeader);
+            int headerPos = headerBytes.Search(localFileHeaderPattern);
 
             return (headerPos != -1);
         }
-
 
         public async Task<IList<ZipEntry>> GetContents(CancellationToken cancellationToken = default)
         {
@@ -39,39 +38,23 @@ namespace ZipContent.Core
 
             var length = await _partialReader.ContentLength(cancellationToken);
 
-            var readLength = length > 5012 ? 5012 : length;
+            var readLength = length > endingSize ? endingSize : length;
 
             var endingBytes = await _partialReader.GetBytes(new ByteRange(length - readLength, length), cancellationToken);
 
-            var eocd = new EndOfCentralDirectory(endingBytes);
-            
-            Zip64EndOfCentralDirectory zip64Eocd = null;
-            Zip64EndOfCentralDirectoryLocator zip64EocdLocator = null;
+            var zipStructure = new  ZipStructure(endingBytes);
 
-            try
-            {
-                zip64Eocd = new Zip64EndOfCentralDirectory(endingBytes);
-                zip64EocdLocator = new Zip64EndOfCentralDirectoryLocator(endingBytes);
-            }
-            catch
-            {
+            var centralDirectoryData = await _partialReader.GetBytes(new ByteRange(zipStructure.CentralDirectoryStartPosition, zipStructure.CentralDirectoryEndPosition), cancellationToken);
 
-            }
+            if (zipStructure.Zip64EndOfCentralDirectory!= null)
+                centralDirectoryData = centralDirectoryData.Concat(zipStructure.Zip64EndOfCentralDirectory.Bytes).ToArray();
 
-            var start = zip64Eocd?.Start ?? eocd.Start;
-            var size = zip64Eocd?.Size ?? eocd.Size;
+            if (zipStructure.Zip64EndOfCentralDirectoryLocator!= null)
+                centralDirectoryData = centralDirectoryData.Concat(zipStructure.Zip64EndOfCentralDirectoryLocator.GetBytes(zipStructure.CentralDirectorySize)).ToArray();
 
-            var centralDirectoryData = await _partialReader.GetBytes(new ByteRange(start, start + size), cancellationToken);
+            var zipFileFromCentralDirectory = centralDirectoryData.Concat(zipStructure.EndOfCentralDirectory.Bytes).ToArray();
 
-            if (zip64Eocd != null)
-                centralDirectoryData = centralDirectoryData.Concat(zip64Eocd.Bytes).ToArray();
-
-            if (zip64EocdLocator != null)
-                centralDirectoryData = centralDirectoryData.Concat(zip64EocdLocator.GetBytes(size)).ToArray();
-
-            var newFile = centralDirectoryData.Concat(eocd.Bytes).ToArray();
-
-            using (Stream stream = new MemoryStream(newFile))
+            using (Stream stream = new MemoryStream(zipFileFromCentralDirectory))
             using (var archive = new ZipArchive(stream, ZipArchiveMode.Read))
                 return archive.Entries.Select(x => new ZipEntry() { FullName = x.FullName, LastWriteTime = x.LastWriteTime, Name = x.Name }).ToList();
 
