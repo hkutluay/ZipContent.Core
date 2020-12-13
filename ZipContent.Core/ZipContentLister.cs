@@ -44,6 +44,7 @@ namespace ZipContent.Core
             var endingBytes = await _partialReader.GetBytes(new ByteRange(length - readLength, length), cancellationToken);
 
             var eocd = new EndOfCentralDirectory(endingBytes);
+            
             Zip64EndOfCentralDirectory zip64Eocd = null;
             Zip64EndOfCentralDirectoryLocator zip64EocdLocator = null;
 
