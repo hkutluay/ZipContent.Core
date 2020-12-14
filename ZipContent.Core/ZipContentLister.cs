@@ -54,9 +54,10 @@ namespace ZipContent.Core
 
             var zipFileFromCentralDirectory = centralDirectoryData.Concat(zipStructure.EndOfCentralDirectory.Bytes).ToArray();
 
-            using (Stream stream = new MemoryStream(zipFileFromCentralDirectory))
-            using (var archive = new ZipArchive(stream, ZipArchiveMode.Read))
-                return archive.Entries.Select(x => new ZipEntry() { FullName = x.FullName, LastWriteTime = x.LastWriteTime, Name = x.Name }).ToList();
+            using Stream stream = new MemoryStream(zipFileFromCentralDirectory);
+            using var archive = new ZipArchive(stream, ZipArchiveMode.Read);
+
+            return archive.Entries.Select(x => new ZipEntry() { FullName = x.FullName, LastWriteTime = x.LastWriteTime, Name = x.Name }).ToList();
 
         }
 
