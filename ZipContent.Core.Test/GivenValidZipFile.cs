@@ -6,18 +6,12 @@ namespace ZipContent.Core.Test
     [TestClass]
     public class GivenValidZipFile
     {
-        private readonly IZipContentLister _lister;
-      
-        public GivenValidZipFile()
-        {
-            _lister = new ZipContentLister();
-        }
-
         [TestMethod]
         public async Task ExtractedFileCountShouldMatch()
         {
             var partialReader = new PartialFileReader("ZipFiles", "foo.zip");
-            var content = await _lister.GetContents(partialReader);
+            var lister = new ZipContentLister(partialReader);
+            var content = await lister.GetContents();
             Assert.AreEqual(content.Count, 1);        
         }
 
@@ -26,7 +20,8 @@ namespace ZipContent.Core.Test
         {
 
             var partialReader = new PartialFileReader("ZipFiles", "foo.zip");
-            var content = await _lister.GetContents(partialReader);           
+            var lister = new ZipContentLister(partialReader);
+            var content = await lister.GetContents();        
             
             Assert.AreEqual(content[0].FullName, "foo.txt");
         }
